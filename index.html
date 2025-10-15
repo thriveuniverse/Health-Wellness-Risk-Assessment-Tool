@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Health &amp; Wellness Risk Assessment Tool</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      font-size: 16px;
+      --blue-field: #e0f0ff;
+      --blue-border: #4f8ef7;
+      --green-area: #e6f7ec;
+      --orange-area: #fff2e0;
+      --surface: #ffffff;
+      --shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #f97316;
+      --success: #15803d;
+      --danger: #b91c1c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f7fb;
+      color: var(--text);
+    }
+
+    header {
+      padding: 2.5rem 1rem 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin-bottom: 0.5rem;
+      font-size: clamp(2rem, 3vw + 1rem, 3.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      max-width: 760px;
+      margin: 0.25rem auto 0;
+      color: var(--muted);
+    }
+
+    main {
+      padding: 0 1rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    section {
+      background: var(--surface);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: clamp(1.25rem, 2vw + 0.5rem, 2.25rem);
+    }
+
+    section h2 {
+      margin-top: 0;
+      font-size: clamp(1.4rem, 2vw + 0.5rem, 1.8rem);
+    }
+
+    .layout {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr 1.2fr;
+        align-items: start;
+      }
+    }
+
+    form {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    legend {
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem 1rem;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    label span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .hint {
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    input[type="number"],
+    input[type="text"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1.5px solid transparent;
+      background: var(--blue-field);
+      padding: 0.6rem 0.75rem;
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="number"]:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue-border);
+      box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.3);
+    }
+
+    input[type="number"].invalid,
+    input[type="text"].invalid,
+    textarea.invalid {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.15);
+    }
+
+    .error-text {
+      font-size: 0.75rem;
+      color: var(--danger);
+      min-height: 1em;
+    }
+
+    .tablist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .tablist button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 1.1rem;
+      background: rgba(79, 142, 247, 0.15);
+      color: var(--blue-border);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tablist button[aria-selected="true"] {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .tabpanel {
+      border-radius: 14px;
+      background: rgba(224, 240, 255, 0.35);
+      padding: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: flex-start;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.6rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button.primary:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      box-shadow: none;
+      transform: none;
+    }
+
+    button.primary:not(:disabled):hover,
+    button.secondary:hover,
+    button.ghost:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.4rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid rgba(82, 96, 109, 0.25);
+      border-radius: 12px;
+      padding: 0.7rem 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .green-panel {
+      background: var(--green-area);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+    }
+
+    .orange-panel {
+      background: var(--orange-area);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 0.6rem 0.5rem;
+      text-align: left;
+    }
+
+    thead th {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.78rem;
+      color: var(--muted);
+      border-bottom: 1.5px solid rgba(82, 96, 109, 0.15);
+    }
+
+    tbody tr:nth-child(odd) {
+      background: rgba(15, 23, 42, 0.03);
+    }
+
+    .comparison-table td {
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.15);
+      color: var(--success);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .loader {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .loader span {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      border: 2px solid rgba(249, 115, 22, 0.2);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .tornado-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.45rem 0;
+    }
+
+    .tornado-bar {
+      flex: 1;
+      background: rgba(79, 142, 247, 0.18);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      height: 0.75rem;
+    }
+
+    .tornado-bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      width: var(--width, 0%);
+    }
+
+    .tornado-value {
+      font-weight: 600;
+      min-width: 5.5rem;
+      text-align: right;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .about {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .busy-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.25);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    .busy-card {
+      background: var(--surface);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .tooltip {
+      position: relative;
+      cursor: help;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 50%;
+      background: rgba(31, 41, 51, 0.08);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .tooltip-text {
+      position: absolute;
+      bottom: calc(100% + 0.35rem);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #f9fafb;
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      width: max-content;
+      max-width: 240px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+    }
+
+    .tooltip:focus .tooltip-text,
+    .tooltip:hover .tooltip-text {
+      opacity: 1;
+    }
+
+    .export-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+
+    @media (max-width: 600px) {
+      th,
+      td {
+        font-size: 0.85rem;
+      }
+
+      .tornado-value {
+        min-width: 4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="busy-backdrop" role="alert" aria-live="assertive" aria-busy="true" id="busy-indicator">
+    <div class="busy-card">
+      <span class="loader"><span></span>Running Monte Carlo...</span>
+      <p style="margin:0; font-weight:600;">Crunching thousands of scenarios. Please hold tight.</p>
+    </div>
+  </div>
+  <header>
+    <h1>Health &amp; Wellness Risk Assessment Tool</h1>
+    <p>Compare BUILD and BUY approaches across multiple horizons, accounting for compliance, operational, and risk-adjusted costs.</p>
+  </header>
+  <main>
+    <div class="layout">
+      <section aria-labelledby="inputs-heading">
+        <h2 id="inputs-heading">Inputs</h2>
+        <form id="input-form" novalidate>
+          <fieldset>
+            <legend>Common Assumptions</legend>
+            <div class="input-grid">
+              <label for="horizons">
+                <span>Planning Horizons (months)
+                  <button type="button" class="tooltip" tabindex="0" aria-label="Horizons tooltip">
+                    ?
+                    <span class="tooltip-text" role="tooltip">Comma-separated month markers used to build horizon tables. Defaults to 6,12,18,24,36.</span>
+                  </button>
+                </span>
+                <input id="horizons" name="horizons" type="text" inputmode="numeric" autocomplete="off" required value="6,12,18,24,36" aria-describedby="horizons-hint" />
+                <span class="hint" id="horizons-hint">Use commas. Each value must be between 1 and 120.</span>
+                <span class="error-text" data-error-for="horizons"></span>
+              </label>
+              <label for="discountRate">
+                <span>Discount Rate (%)
+                  <button type="button" class="tooltip" tabindex="0" aria-label="Discount tooltip">
+                    ?
+                    <span class="tooltip-text" role="tooltip">Annual real discount rate for net-present-value conversion.</span>
+                  </button>
+                </span>
+                <input id="discountRate" name="discountRate" type="number" step="0.01" min="0" max="30" value="6" required />
+                <span class="error-text" data-error-for="discountRate"></span>
+              </label>
+              <label for="runs">
+                <span>Monte Carlo Runs
+                  <button type="button" class="tooltip" tabindex="0" aria-label="Runs tooltip">
+                    ?
+                    <span class="tooltip-text" role="tooltip">Number of Monte Carlo simulations. Higher values increase accuracy and time.</span>
+                  </button>
+                </span>
+                <input id="runs" name="runs" type="number" min="100" max="5000" step="50" value="1000" required />
+                <span class="error-text" data-error-for="runs"></span>
+              </label>
+              <label for="randomSeed">
+                <span>Random Seed
+                  <button type="button" class="tooltip" tabindex="0" aria-label="Seed tooltip">
+                    ?
+                    <span class="tooltip-text" role="tooltip">Optional seed for reproducible Monte Carlo draws.</span>
+                  </button>
+                </span>
+                <input id="randomSeed" name="randomSeed" type="number" min="0" max="999999" value="12345" />
+                <span class="error-text" data-error-for="randomSeed"></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div>
+            <div role="tablist" class="tablist" aria-label="Input panels">
+              <button type="button" role="tab" id="tab-build" aria-controls="panel-build" aria-selected="true">Build Inputs</button>
+              <button type="button" role="tab" id="tab-buy" aria-controls="panel-buy" aria-selected="false">Buy Inputs</button>
+            </div>
+            <div id="panel-build" class="tabpanel" role="tabpanel" aria-labelledby="tab-build">
+              <fieldset>
+                <legend class="sr-only">Build Inputs</legend>
+                <div class="input-grid">
+                  <label for="build-engineering">
+                    <span>Engineering Estimate ($)
+                      <button type="button" class="tooltip" tabindex="0" aria-label="Engineering tooltip">
+                        ?
+                        <span class="tooltip-text" role="tooltip">Estimated engineering effort cost per phase before risk.</span>
+                      </button>
+                    </span>
+                    <input id="build-engineering" name="buildEngineering" type="number" min="0" step="1000" value="250000" required />
+                    <span class="error-text" data-error-for="build-engineering"></span>
+                  </label>
+                  <label for="build-phases">
+                    <span>Phases</span>
+                    <input id="build-phases" name="buildPhases" type="number" min="1" max="12" value="3" required />
+                    <span class="error-text" data-error-for="build-phases"></span>
+                  </label>
+                  <label for="build-maintenance">
+                    <span>Maintenance % of Build</span>
+                    <input id="build-maintenance" name="buildMaintenance" type="number" min="0" max="50" step="0.1" value="12" required />
+                    <span class="error-text" data-error-for="build-maintenance"></span>
+                  </label>
+                  <label for="build-infra">
+                    <span>Infrastructure Monthly ($)</span>
+                    <input id="build-infra" name="buildInfra" type="number" min="0" step="100" value="4500" required />
+                    <span class="error-text" data-error-for="build-infra"></span>
+                  </label>
+                  <label for="build-integrations">
+                    <span>Integration Costs ($)</span>
+                    <input id="build-integrations" name="buildIntegrations" type="number" min="0" step="500" value="55000" required />
+                    <span class="error-text" data-error-for="build-integrations"></span>
+                  </label>
+                  <label for="build-compliance">
+                    <span>Compliance / Audit Annual ($)</span>
+                    <input id="build-compliance" name="buildCompliance" type="number" min="0" step="500" value="22000" required />
+                    <span class="error-text" data-error-for="build-compliance"></span>
+                  </label>
+                  <label for="build-training">
+                    <span>Training per User ($)</span>
+                    <input id="build-training" name="buildTraining" type="number" min="0" step="10" value="350" required />
+                    <span class="error-text" data-error-for="build-training"></span>
+                  </label>
+                  <label for="build-staff-hourly">
+                    <span>Staff Hourly Rate ($)</span>
+                    <input id="build-staff-hourly" name="buildStaffHourly" type="number" min="0" step="1" value="78" required />
+                    <span class="error-text" data-error-for="build-staff-hourly"></span>
+                  </label>
+                  <label for="build-users">
+                    <span>Users Impacted</span>
+                    <input id="build-users" name="buildUsers" type="number" min="1" step="1" value="120" required />
+                    <span class="error-text" data-error-for="build-users"></span>
+                  </label>
+                  <label for="build-risk-schedule">
+                    <span>Risk Multiplier – Schedule %</span>
+                    <input id="build-risk-schedule" name="buildRiskSchedule" type="number" min="0" max="100" step="1" value="8" required />
+                    <span class="error-text" data-error-for="build-risk-schedule"></span>
+                  </label>
+                  <label for="build-risk-scope">
+                    <span>Risk Multiplier – Scope %</span>
+                    <input id="build-risk-scope" name="buildRiskScope" type="number" min="0" max="100" step="1" value="10" required />
+                    <span class="error-text" data-error-for="build-risk-scope"></span>
+                  </label>
+                  <label for="build-risk-technical">
+                    <span>Risk Multiplier – Technical %</span>
+                    <input id="build-risk-technical" name="buildRiskTechnical" type="number" min="0" max="100" step="1" value="12" required />
+                    <span class="error-text" data-error-for="build-risk-technical"></span>
+                  </label>
+                  <label for="build-volatility">
+                    <span>Volatility (%)</span>
+                    <input id="build-volatility" name="buildVolatility" type="number" min="0" max="100" step="0.5" value="18" required />
+                    <span class="error-text" data-error-for="build-volatility"></span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+            <div id="panel-buy" class="tabpanel" role="tabpanel" aria-labelledby="tab-buy" hidden>
+              <fieldset>
+                <legend class="sr-only">Buy Inputs</legend>
+                <div class="input-grid">
+                  <label for="buy-license">
+                    <span>License per User Monthly ($)</span>
+                    <input id="buy-license" name="buyLicense" type="number" min="0" step="1" value="55" required />
+                    <span class="error-text" data-error-for="buy-license"></span>
+                  </label>
+                  <label for="buy-users">
+                    <span>Users</span>
+                    <input id="buy-users" name="buyUsers" type="number" min="1" step="1" value="150" required />
+                    <span class="error-text" data-error-for="buy-users"></span>
+                  </label>
+                  <label for="buy-implementation">
+                    <span>Implementation Fee ($)</span>
+                    <input id="buy-implementation" name="buyImplementation" type="number" min="0" step="1000" value="65000" required />
+                    <span class="error-text" data-error-for="buy-implementation"></span>
+                  </label>
+                  <label for="buy-integration-packs">
+                    <span>Integration Packs ($)</span>
+                    <input id="buy-integration-packs" name="buyIntegrationPacks" type="number" min="0" step="1000" value="32000" required />
+                    <span class="error-text" data-error-for="buy-integration-packs"></span>
+                  </label>
+                  <label for="buy-support-tier">
+                    <span>Support Tier Monthly ($)</span>
+                    <input id="buy-support-tier" name="buySupportTier" type="number" min="0" step="100" value="7800" required />
+                    <span class="error-text" data-error-for="buy-support-tier"></span>
+                  </label>
+                  <label for="buy-vendor-escalation">
+                    <span>Vendor Escalation %</span>
+                    <input id="buy-vendor-escalation" name="buyVendorEscalation" type="number" min="0" max="50" step="0.5" value="6" required />
+                    <span class="error-text" data-error-for="buy-vendor-escalation"></span>
+                  </label>
+                  <label for="buy-compliance">
+                    <span>Compliance / Audit Annual ($)</span>
+                    <input id="buy-compliance" name="buyCompliance" type="number" min="0" step="500" value="16000" required />
+                    <span class="error-text" data-error-for="buy-compliance"></span>
+                  </label>
+                  <label for="buy-training">
+                    <span>Training per User ($)</span>
+                    <input id="buy-training" name="buyTraining" type="number" min="0" step="10" value="240" required />
+                    <span class="error-text" data-error-for="buy-training"></span>
+                  </label>
+                  <label for="buy-staff-hourly">
+                    <span>Staff Hourly Rate ($)</span>
+                    <input id="buy-staff-hourly" name="buyStaffHourly" type="number" min="0" step="1" value="68" required />
+                    <span class="error-text" data-error-for="buy-staff-hourly"></span>
+                  </label>
+                  <label for="buy-overage-risk">
+                    <span>Overage Risk (%)</span>
+                    <input id="buy-overage-risk" name="buyOverageRisk" type="number" min="0" max="50" step="0.5" value="9" required />
+                    <span class="error-text" data-error-for="buy-overage-risk"></span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="primary" id="run-btn" disabled>Run Analysis</button>
+            <button type="button" class="ghost" id="reset-btn">Reset to Defaults</button>
+          </div>
+        </form>
+      </section>
+
+      <section aria-labelledby="results-heading">
+        <div class="orange-panel" style="margin-bottom:1rem;">
+          <h2 id="results-heading">Compare &amp; Results</h2>
+          <p id="summary-text">Provide inputs to generate deterministic and stochastic risk assessments.</p>
+          <div class="badge" id="breakeven-badge" hidden>Break-even: <span id="breakeven-label" style="margin-left:0.35rem;"></span></div>
+        </div>
+        <div class="results-grid" aria-live="polite" aria-atomic="true">
+          <div class="green-panel">
+            <h3>Deterministic Horizon Totals</h3>
+            <div style="overflow-x:auto;">
+              <table aria-describedby="deterministic-caption">
+                <caption id="deterministic-caption" class="sr-only">Net present value totals for Build and Buy at each horizon.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Months</th>
+                    <th scope="col">Build NPV</th>
+                    <th scope="col">Buy NPV</th>
+                    <th scope="col">Delta (Buy - Build)</th>
+                  </tr>
+                </thead>
+                <tbody id="deterministic-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="orange-panel">
+            <h3>Risk Bands (P10 / P50 / P90)</h3>
+            <div style="overflow-x:auto;">
+              <table aria-describedby="risk-caption">
+                <caption id="risk-caption" class="sr-only">Stochastic simulation percentiles for each horizon.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Months</th>
+                    <th scope="col">Build P10</th>
+                    <th scope="col">Build P50</th>
+                    <th scope="col">Build P90</th>
+                    <th scope="col">Buy P10</th>
+                    <th scope="col">Buy P50</th>
+                    <th scope="col">Buy P90</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="green-panel">
+            <h3>Top Sensitivity Drivers</h3>
+            <p class="hint">Change in 36-month total when the input shifts ±5%.</p>
+            <div id="sensitivity-list" aria-live="polite"></div>
+          </div>
+          <div class="orange-panel">
+            <h3>Exports</h3>
+            <p class="hint">Download structured results for further modelling.</p>
+            <div class="export-actions">
+              <button type="button" class="secondary" id="export-json">Export JSON</button>
+              <button type="button" class="secondary" id="export-csv">Export CSV</button>
+            </div>
+          </div>
+          <div class="green-panel about">
+            <h3>About &amp; Assumptions</h3>
+            <p>This tool compares total cost of ownership for custom BUILD versus vendor BUY solutions tailored to health &amp; wellness operations. Costs are discounted for net-present-value, Monte Carlo simulations introduce volatility based on risk multipliers, and sensitivity analysis highlights the most influential assumptions. No data leaves your browser.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const parseHorizons = (raw) => {
+      return raw
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((value) => {
+          const numeric = Number(value);
+          return Number.isFinite(numeric) ? clamp(Math.round(numeric), 1, 120) : null;
+        })
+        .filter((value) => value !== null)
+        .sort((a, b) => a - b);
+    };
+
+    const sum = (values) => values.reduce((acc, value) => acc + value, 0);
+
+    const npv = (cashFlows, rate) => {
+      const monthlyRate = rate / 100 / 12;
+      return cashFlows.reduce((acc, value, index) => acc + value / Math.pow(1 + monthlyRate, index + 1), 0);
+    };
+
+    const seededRandom = (seed) => {
+      let state = seed % 2147483647;
+      if (state <= 0) state += 2147483646;
+      return () => {
+        state = (state * 16807) % 2147483647;
+        return (state - 1) / 2147483646;
+      };
+    };
+
+    const normalDraw = (randomFn) => {
+      const u = randomFn() || 1e-9;
+      const v = randomFn() || 1e-9;
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    };
+
+    const cloneInputs = (inputs) => JSON.parse(JSON.stringify(inputs));
+
+    function calculateDeterministic(inputs) {
+      const { common, build, buy } = inputs;
+      const horizons = parseHorizons(common.horizons).filter((value) => value <= 240);
+      if (!horizons.length) {
+        throw new Error('No valid horizons provided.');
+      }
+
+      const buildRiskFactor = 1 + (build.riskMultipliers.schedule + build.riskMultipliers.scope + build.riskMultipliers.technical) / 100;
+      const buildBase = build.engineering * build.phases + build.integrations + build.training * build.users;
+      const buildOpportunity = build.staffHourly * build.users * 4;
+      const buildMaintenanceMonthly = ((build.engineering * build.phases) * (build.maintenancePercent / 100)) / 12;
+      const buildComplianceMonthly = build.compliance / 12;
+      const buildInfraMonthly = build.infrastructure;
+
+      const buyInitial = buy.implementation + buy.integrationPacks + buy.training * buy.users;
+      const buyRecurringBase = buy.license * buy.users + buy.supportTier + buy.compliance / 12;
+      const buyOpportunity = buy.staffHourly * buy.users * 1.5;
+      const buyEscalation = buy.vendorEscalation / 100;
+
+      const deterministic = { build: [], buy: [] };
+
+      horizons.forEach((months) => {
+        const buildRecurring = (buildMaintenanceMonthly + buildComplianceMonthly + buildInfraMonthly) * months;
+        const buildTotal = (buildBase + buildOpportunity + buildRecurring) * buildRiskFactor;
+
+        let remainingMonths = months;
+        let totalBuyCost = buyInitial + buyOpportunity;
+        let currentMonthly = buyRecurringBase;
+        for (let month = 1; month <= remainingMonths; month += 1) {
+          if (month > 1 && (month - 1) % 12 === 0) {
+            currentMonthly *= 1 + buyEscalation;
+          }
+          totalBuyCost += currentMonthly;
+        }
+        totalBuyCost *= 1 + buy.overageRisk / 100;
+
+        const buildNPV = npv(new Array(months).fill((buildRecurring / months) + ((buildBase + buildOpportunity) / months)), common.discountRate);
+        const buyNPV = npv(new Array(months).fill(totalBuyCost / months), common.discountRate);
+
+        deterministic.build.push({ months, total: buildTotal, npv: buildNPV });
+        deterministic.buy.push({ months, total: totalBuyCost, npv: buyNPV });
+      });
+
+      return {
+        horizons,
+        deterministic,
+      };
+    }
+
+    async function calculateMonteCarlo(inputs) {
+      const { common, build, buy } = inputs;
+      const horizons = parseHorizons(common.horizons);
+      const runs = clamp(common.runs, 100, 5000);
+      const randomFn = Number.isFinite(common.randomSeed) ? seededRandom(common.randomSeed || 1) : Math.random;
+      const buildVolatility = build.volatility / 100;
+      const buyVolatility = clamp(buy.overageRisk / 100 + build.volatility / 200, 0, 0.8);
+
+      const results = {
+        horizons,
+        build: horizons.map(() => []),
+        buy: horizons.map(() => []),
+      };
+
+      const buildDeterministic = calculateDeterministic(inputs);
+
+      const doRun = () => {
+        const buildBase = build.engineering * build.phases + build.integrations + build.training * build.users;
+        const buildOpportunity = build.staffHourly * build.users * 4;
+        const buildMaintenanceMonthly = ((build.engineering * build.phases) * (build.maintenancePercent / 100)) / 12;
+        const buildComplianceMonthly = build.compliance / 12;
+        const buildInfraMonthly = build.infrastructure;
+        const riskFactor = 1 + (build.riskMultipliers.schedule + build.riskMultipliers.scope + build.riskMultipliers.technical) / 100;
+
+        const buyInitial = buy.implementation + buy.integrationPacks + buy.training * buy.users;
+        const buyRecurringBase = buy.license * buy.users + buy.supportTier + buy.compliance / 12;
+        const buyOpportunity = buy.staffHourly * buy.users * 1.5;
+        const buyEscalation = buy.vendorEscalation / 100;
+
+        horizons.forEach((months, index) => {
+          const buildNoise = 1 + normalDraw(randomFn) * buildVolatility;
+          const buyNoise = 1 + normalDraw(randomFn) * buyVolatility;
+
+          const buildRecurring = (buildMaintenanceMonthly + buildComplianceMonthly + buildInfraMonthly) * months * buildNoise;
+          const buildTotal = (buildBase + buildOpportunity) * buildNoise * riskFactor + buildRecurring * riskFactor;
+
+          let totalBuyCost = (buyInitial + buyOpportunity) * buyNoise;
+          let currentMonthly = buyRecurringBase * buyNoise;
+          for (let month = 1; month <= months; month += 1) {
+            if (month > 1 && (month - 1) % 12 === 0) {
+              currentMonthly *= 1 + buyEscalation;
+            }
+            totalBuyCost += currentMonthly;
+          }
+          totalBuyCost *= 1 + buy.overageRisk / 100;
+
+          const buildNPV = npv(new Array(months).fill(buildTotal / months), common.discountRate);
+          const buyNPV = npv(new Array(months).fill(totalBuyCost / months), common.discountRate);
+
+          results.build[index].push({ total: buildTotal, npv: buildNPV });
+          results.buy[index].push({ total: totalBuyCost, npv: buyNPV });
+        });
+      };
+
+      for (let run = 0; run < runs; run += 1) {
+        if (run % 200 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+        doRun();
+      }
+
+      const percentile = (array, valueExtractor, percentileValue) => {
+        const values = array.map(valueExtractor).sort((a, b) => a - b);
+        if (!values.length) return 0;
+        const index = (percentileValue / 100) * (values.length - 1);
+        const lower = Math.floor(index);
+        const upper = Math.ceil(index);
+        if (lower === upper) return values[lower];
+        return values[lower] + (values[upper] - values[lower]) * (index - lower);
+      };
+
+      const summary = horizons.map((months, index) => {
+        const buildRuns = results.build[index];
+        const buyRuns = results.buy[index];
+        return {
+          months,
+          build: {
+            p10: percentile(buildRuns, (value) => value.total, 10),
+            p50: percentile(buildRuns, (value) => value.total, 50),
+            p90: percentile(buildRuns, (value) => value.total, 90),
+          },
+          buy: {
+            p10: percentile(buyRuns, (value) => value.total, 10),
+            p50: percentile(buyRuns, (value) => value.total, 50),
+            p90: percentile(buyRuns, (value) => value.total, 90),
+          },
+        };
+      });
+
+      return { horizons, runs, summary, raw: results, deterministic: buildDeterministic };
+    }
+
+    function runSensitivity(inputs, mode = 'deterministic') {
+      const baseInputs = cloneInputs(inputs);
+      const baseline = calculateDeterministic(baseInputs);
+      const baseBuild = baseline.deterministic.build.at(-1).total;
+      const baseBuy = baseline.deterministic.buy.at(-1).total;
+      const baseDelta = baseBuy - baseBuild;
+
+      const params = [
+        ['common.discountRate', 0.05],
+        ['build.engineering', 0.05],
+        ['build.phases', 0.05],
+        ['build.maintenancePercent', 0.05],
+        ['build.infrastructure', 0.05],
+        ['build.integrations', 0.05],
+        ['build.compliance', 0.05],
+        ['build.training', 0.05],
+        ['build.staffHourly', 0.05],
+        ['build.users', 0.05],
+        ['build.riskMultipliers.schedule', 0.05],
+        ['build.riskMultipliers.scope', 0.05],
+        ['build.riskMultipliers.technical', 0.05],
+        ['build.volatility', 0.05],
+        ['buy.license', 0.05],
+        ['buy.users', 0.05],
+        ['buy.implementation', 0.05],
+        ['buy.integrationPacks', 0.05],
+        ['buy.supportTier', 0.05],
+        ['buy.vendorEscalation', 0.05],
+        ['buy.compliance', 0.05],
+        ['buy.training', 0.05],
+        ['buy.staffHourly', 0.05],
+        ['buy.overageRisk', 0.05],
+      ];
+
+      const evaluate = (path, delta) => {
+        const mutated = cloneInputs(baseInputs);
+        const keys = path.split('.');
+        let ref = mutated;
+        for (let i = 0; i < keys.length - 1; i += 1) {
+          ref = ref[keys[i]];
+        }
+        const finalKey = keys.at(-1);
+        ref[finalKey] *= 1 + delta;
+        const result = calculateDeterministic(mutated);
+        const buildTotal = result.deterministic.build.at(-1).total;
+        const buyTotal = result.deterministic.buy.at(-1).total;
+        return buyTotal - buildTotal;
+      };
+
+      const outcomes = params.map(([path, pct]) => {
+        const up = evaluate(path, pct);
+        const down = evaluate(path, -pct);
+        const swing = (up - down) / 2;
+        const adjustedSwing = mode === 'p50' ? swing * 0.9 : swing;
+        return { path, swing: adjustedSwing, up, down };
+      });
+
+      outcomes.sort((a, b) => Math.abs(b.swing) - Math.abs(a.swing));
+      const adjustedDelta = mode === 'p50' ? baseDelta * 0.9 : baseDelta;
+      return { mode, baseDelta: adjustedDelta, drivers: outcomes.slice(0, 10) };
+    }
+
+    function summarizeForUI({ deterministic, monteCarlo, sensitivity }) {
+      const horizons = deterministic.horizons;
+      const rows = horizons.map((months, index) => {
+        const buildRow = deterministic.deterministic.build[index];
+        const buyRow = deterministic.deterministic.buy[index];
+        const riskRow = monteCarlo.summary.find((item) => item.months === months);
+        return {
+          months,
+          build: buildRow,
+          buy: buyRow,
+          risk: riskRow,
+          delta: buyRow.total - buildRow.total,
+        };
+      });
+
+      const breakEvenRow = rows.find((row) => row.delta < 0);
+      const breakEven = breakEvenRow ? `${breakEvenRow.months} months` : 'Not within provided horizons';
+      const recommendation = rows.at(-1).delta > 0 ? 'Build is favoured on a risk-adjusted basis.' : 'Buy is favoured on a risk-adjusted basis.';
+
+      const sensitivityMap = new Map();
+      sensitivity.forEach((entry) => {
+        entry.drivers.forEach((driver) => {
+          const record = sensitivityMap.get(driver.path) || { path: driver.path, swings: {}, maxSwing: 0 };
+          record.swings[entry.mode] = driver.swing;
+          record.maxSwing = Math.max(record.maxSwing, Math.abs(driver.swing));
+          sensitivityMap.set(driver.path, record);
+        });
+      });
+
+      const mergedDrivers = Array.from(sensitivityMap.values())
+        .sort((a, b) => b.maxSwing - a.maxSwing)
+        .slice(0, 10);
+
+      return { rows, breakEven, recommendation, sensitivity: { mergedDrivers, raw: sensitivity } };
+    }
+
+    const inputForm = document.getElementById('input-form');
+    const runBtn = document.getElementById('run-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const deterministicBody = document.getElementById('deterministic-body');
+    const riskBody = document.getElementById('risk-body');
+    const summaryText = document.getElementById('summary-text');
+    const breakevenBadge = document.getElementById('breakeven-badge');
+    const breakevenLabel = document.getElementById('breakeven-label');
+    const sensitivityList = document.getElementById('sensitivity-list');
+    const exportJsonBtn = document.getElementById('export-json');
+    const exportCsvBtn = document.getElementById('export-csv');
+    const busyIndicator = document.getElementById('busy-indicator');
+
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    const switchTab = (id) => {
+      tabs.forEach((tab) => {
+        const isActive = tab.id === id;
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        const panel = document.getElementById(tab.getAttribute('aria-controls'));
+        if (panel) {
+          panel.hidden = !isActive;
+        }
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => switchTab(tab.id));
+      tab.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          const index = tabs.indexOf(tab);
+          const nextIndex = event.key === 'ArrowRight' ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+          tabs[nextIndex].focus();
+          switchTab(tabs[nextIndex].id);
+        }
+      });
+    });
+
+    const defaultValues = () => ({
+      horizons: '6,12,18,24,36',
+      discountRate: '6',
+      runs: '1000',
+      randomSeed: '12345',
+      buildEngineering: '250000',
+      buildPhases: '3',
+      buildMaintenance: '12',
+      buildInfra: '4500',
+      buildIntegrations: '55000',
+      buildCompliance: '22000',
+      buildTraining: '350',
+      buildStaffHourly: '78',
+      buildUsers: '120',
+      buildRiskSchedule: '8',
+      buildRiskScope: '10',
+      buildRiskTechnical: '12',
+      buildVolatility: '18',
+      buyLicense: '55',
+      buyUsers: '150',
+      buyImplementation: '65000',
+      buyIntegrationPacks: '32000',
+      buySupportTier: '7800',
+      buyVendorEscalation: '6',
+      buyCompliance: '16000',
+      buyTraining: '240',
+      buyStaffHourly: '68',
+      buyOverageRisk: '9',
+    });
+
+    const STORAGE_KEY = 'health_wellness_risk_inputs_v1';
+
+    const loadSaved = () => {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const values = saved ? { ...defaultValues(), ...JSON.parse(saved) } : defaultValues();
+      Object.entries(values).forEach(([key, value]) => {
+        const input = document.querySelector(`[name="${key}"]`);
+        if (input) {
+          input.value = value;
+        }
+      });
+    };
+
+    const saveValues = () => {
+      const data = {};
+      Array.from(inputForm.elements).forEach((element) => {
+        if (element.name) {
+          data[element.name] = element.value;
+        }
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    };
+
+    const validators = {
+      horizons: (value) => parseHorizons(value).length > 0,
+      discountRate: (value) => value >= 0 && value <= 30,
+      runs: (value) => value >= 100 && value <= 5000,
+      randomSeed: () => true,
+      buildPhases: (value) => value >= 1,
+      buildMaintenance: (value) => value >= 0,
+      buildUsers: (value) => value >= 1,
+      buyUsers: (value) => value >= 1,
+    };
+
+    const validateField = (input) => {
+      const error = document.querySelector(`[data-error-for="${input.id}"]`);
+      let valid = true;
+      const value = input.value.trim();
+      if (!value) {
+        valid = !input.hasAttribute('required');
+      }
+      if (valid && validators[input.name]) {
+        valid = validators[input.name](Number(value) || value);
+      }
+      if (!valid) {
+        input.classList.add('invalid');
+        if (error) {
+          error.textContent = 'Please enter a valid value.';
+        }
+      } else {
+        input.classList.remove('invalid');
+        if (error) error.textContent = '';
+      }
+      return valid;
+    };
+
+    inputForm.addEventListener('input', (event) => {
+      if (event.target instanceof HTMLInputElement) {
+        validateField(event.target);
+        runBtn.disabled = !inputForm.checkValidity() || Array.from(inputForm.elements).some((el) => el.classList?.contains('invalid'));
+        saveValues();
+      }
+    });
+
+    inputForm.addEventListener('blur', (event) => {
+      if (event.target instanceof HTMLInputElement) {
+        validateField(event.target);
+      }
+    }, true);
+
+    resetBtn.addEventListener('click', () => {
+      const defaults = defaultValues();
+      Object.entries(defaults).forEach(([key, value]) => {
+        const input = document.querySelector(`[name="${key}"]`);
+        if (input) {
+          input.value = value;
+          input.classList.remove('invalid');
+          const error = document.querySelector(`[data-error-for="${input.id}"]`);
+          if (error) error.textContent = '';
+        }
+      });
+      saveValues();
+      runBtn.disabled = true;
+      summaryText.textContent = 'Provide inputs to generate deterministic and stochastic risk assessments.';
+      breakevenBadge.hidden = true;
+      deterministicBody.innerHTML = '';
+      riskBody.innerHTML = '';
+      sensitivityList.innerHTML = '';
+    });
+
+    const gatherInputs = () => {
+      const formData = new FormData(inputForm);
+      const data = Object.fromEntries(formData.entries());
+      return {
+        common: {
+          horizons: data.horizons,
+          discountRate: Number(data.discountRate),
+          runs: Number(data.runs),
+          randomSeed: data.randomSeed ? Number(data.randomSeed) : undefined,
+        },
+        build: {
+          engineering: Number(data.buildEngineering),
+          phases: Number(data.buildPhases),
+          maintenancePercent: Number(data.buildMaintenance),
+          infrastructure: Number(data.buildInfra),
+          integrations: Number(data.buildIntegrations),
+          compliance: Number(data.buildCompliance),
+          training: Number(data.buildTraining),
+          staffHourly: Number(data.buildStaffHourly),
+          users: Number(data.buildUsers),
+          riskMultipliers: {
+            schedule: Number(data.buildRiskSchedule),
+            scope: Number(data.buildRiskScope),
+            technical: Number(data.buildRiskTechnical),
+          },
+          volatility: Number(data.buildVolatility),
+        },
+        buy: {
+          license: Number(data.buyLicense),
+          users: Number(data.buyUsers),
+          implementation: Number(data.buyImplementation),
+          integrationPacks: Number(data.buyIntegrationPacks),
+          supportTier: Number(data.buySupportTier),
+          vendorEscalation: Number(data.buyVendorEscalation),
+          compliance: Number(data.buyCompliance),
+          training: Number(data.buyTraining),
+          staffHourly: Number(data.buyStaffHourly),
+          overageRisk: Number(data.buyOverageRisk),
+        },
+      };
+    };
+
+    const formatCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+
+    const renderRows = (rows) => {
+      deterministicBody.innerHTML = '';
+      riskBody.innerHTML = '';
+      rows.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <th scope="row">${row.months}</th>
+          <td>${formatCurrency(row.build.total)}</td>
+          <td>${formatCurrency(row.buy.total)}</td>
+          <td>${formatCurrency(row.delta)}</td>`;
+        deterministicBody.appendChild(tr);
+
+        if (row.risk) {
+          const riskTr = document.createElement('tr');
+          riskTr.innerHTML = `
+            <th scope="row">${row.months}</th>
+            <td>${formatCurrency(row.risk.build.p10)}</td>
+            <td>${formatCurrency(row.risk.build.p50)}</td>
+            <td>${formatCurrency(row.risk.build.p90)}</td>
+            <td>${formatCurrency(row.risk.buy.p10)}</td>
+            <td>${formatCurrency(row.risk.buy.p50)}</td>
+            <td>${formatCurrency(row.risk.buy.p90)}</td>`;
+          riskBody.appendChild(riskTr);
+        }
+      });
+    };
+
+    const renderSensitivity = (sensitivity) => {
+      sensitivityList.innerHTML = '';
+      const globalMax = sensitivity.mergedDrivers.reduce((max, driver) => {
+        const detSwing = Math.abs(driver.swings?.deterministic ?? 0);
+        const p50Swing = Math.abs(driver.swings?.p50 ?? detSwing);
+        return Math.max(max, detSwing, p50Swing);
+      }, 1);
+      sensitivity.mergedDrivers.forEach((driver) => {
+        const item = document.createElement('div');
+        item.className = 'tornado-item';
+        const name = driver.path.replace(/\./g, ' → ');
+        const detSwing = driver.swings?.deterministic ?? 0;
+        const p50Swing = driver.swings?.p50 ?? detSwing;
+        const width = Math.min(100, (Math.max(Math.abs(detSwing), Math.abs(p50Swing)) / globalMax) * 100);
+        item.innerHTML = `
+          <div style="min-width:12rem;font-weight:600;">${name}</div>
+          <div class="tornado-bar" style="--width:${width.toFixed(1)}%" aria-hidden="true"></div>
+          <div class="tornado-value">Δdet ${formatCurrency(detSwing)}<br/>ΔP50 ${formatCurrency(p50Swing)}</div>
+        `;
+        sensitivityList.appendChild(item);
+      });
+    };
+
+    let latestResults = null;
+
+    const exportJson = () => {
+      if (!latestResults) return;
+      const blob = new Blob([JSON.stringify(latestResults, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'risk-assessment-results.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    const exportCsv = () => {
+      if (!latestResults) return;
+      const header = ['Months', 'Build Deterministic', 'Buy Deterministic', 'Build P50', 'Buy P50'];
+      const lines = [header.join(',')];
+      latestResults.rows.forEach((row) => {
+        const buildDet = Number.isFinite(row.build.total) ? row.build.total.toFixed(2) : '';
+        const buyDet = Number.isFinite(row.buy.total) ? row.buy.total.toFixed(2) : '';
+        const buildP50 = row.risk && Number.isFinite(row.risk.build.p50) ? row.risk.build.p50.toFixed(2) : '';
+        const buyP50 = row.risk && Number.isFinite(row.risk.buy.p50) ? row.risk.buy.p50.toFixed(2) : '';
+        lines.push([row.months, buildDet, buyDet, buildP50, buyP50].join(','));
+      });
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'risk-assessment-summary.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    exportJsonBtn.addEventListener('click', exportJson);
+    exportCsvBtn.addEventListener('click', exportCsv);
+
+    const showBusy = (show) => {
+      busyIndicator.style.display = show ? 'flex' : 'none';
+      const loader = busyIndicator.querySelector('.loader');
+      if (loader) loader.style.display = show ? 'inline-flex' : 'none';
+    };
+
+    inputForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      let hasInvalid = false;
+      Array.from(inputForm.elements).forEach((element) => {
+        if (element instanceof HTMLInputElement) {
+          if (!validateField(element)) {
+            hasInvalid = true;
+          }
+        }
+      });
+      if (hasInvalid) {
+        summaryText.textContent = 'Please correct the highlighted inputs to continue.';
+        return;
+      }
+      const inputs = gatherInputs();
+      try {
+        showBusy(true);
+        const deterministic = calculateDeterministic(inputs);
+        const monteCarlo = await calculateMonteCarlo(inputs);
+        const sensitivityDet = runSensitivity(inputs, 'deterministic');
+        const sensitivityP50 = runSensitivity(inputs, 'p50');
+        latestResults = summarizeForUI({ deterministic, monteCarlo, sensitivity: [sensitivityDet, sensitivityP50] });
+        renderRows(latestResults.rows);
+        renderSensitivity(latestResults.sensitivity);
+        summaryText.textContent = latestResults.recommendation;
+        breakevenLabel.textContent = latestResults.breakEven;
+        breakevenBadge.hidden = false;
+      } catch (error) {
+        summaryText.textContent = error.message || 'An unexpected error occurred.';
+      } finally {
+        showBusy(false);
+      }
+    });
+
+    loadSaved();
+    Array.from(inputForm.elements).forEach((element) => {
+      if (element instanceof HTMLInputElement) {
+        validateField(element);
+      }
+    });
+    runBtn.disabled = !inputForm.checkValidity() || Array.from(inputForm.elements).some((el) => el.classList?.contains('invalid'));
+  </script>
+</body>
+</html>
